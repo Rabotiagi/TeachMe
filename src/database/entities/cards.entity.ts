@@ -5,23 +5,23 @@ import {
     JoinColumn,
     PrimaryGeneratedColumn
 } from "typeorm";
-import { User } from './users.entity';
+import { Users } from './users.entity';
 
 @Entity()
 export class Card {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
-    @OneToOne(() => User, user => user.id, {onDelete: 'CASCADE'})
+    @OneToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
     @JoinColumn()
-    userId: User
+    userId: Users;
 
     @Column()
-    cardNum: string
+    cardNum: string;
 
     @Column()
-    date: string
+    date: string;
 
     @Column()
-    cvc: number
+    cvc: number;
 }

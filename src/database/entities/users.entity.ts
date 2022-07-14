@@ -1,23 +1,34 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { TutorData } from "./tutorData.entity";
 
 @Entity()
-export class User {
+export class Users {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column({
         length: 50
     })
-    email: string
+    email: string;
 
     @Column()
-    password: string
+    password: string;
 
     @Column({
         length: 20
     })
-    name: string
+    firstName: string;
 
-    @Column()
-    photo: string
+    @Column({
+        length: 20
+    })
+    lastName: string;
+
+    @OneToOne(() => TutorData, tutorData => tutorData.user)
+    tutorData: TutorData
+
+    @Column({
+        nullable: true
+    })
+    photo?: string;
 }

@@ -1,14 +1,14 @@
-import { Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./users.entity";
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Users } from "./users.entity";
 
 @Entity()
 export class Chat {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
-    @ManyToOne(() => User, user => user.id)
-    tutorId: User
+    @ManyToOne(() => Users, user => user.id)
+    tutorId: Users;
 
-    @ManyToOne(() => User, user => user.id)
-    userId: User
+    @ManyToOne(() => Users, user => user.id)
+    userId: Users;
 }

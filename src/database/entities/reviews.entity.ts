@@ -1,21 +1,21 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./users.entity";
+import { Users } from "./users.entity";
 
 @Entity()
 export class Review {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
-    @ManyToOne(() => User, user => user.id, {onDelete: 'CASCADE'})
-    tutorId: User
+    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
+    tutorId: Users;
 
-    @OneToOne(() => User, user => user.id)
+    @OneToOne(() => Users, user => user.id)
     @JoinColumn()
-    reviewerId: User
+    reviewerId: Users;
 
     @Column({length: 255})
-    review: string
+    review: string;
 
     @Column("decimal")
-    grade: number
+    grade: number;
 }

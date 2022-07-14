@@ -1,27 +1,30 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./users.entity";
+import { Users } from "./users.entity";
 
 @Entity()
 export class TutorData{
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToOne(() => User, user => user.id, {onDelete: 'CASCADE'})
+    @OneToOne(() => Users, user => user.tutorData, {onDelete: 'CASCADE'})
     @JoinColumn()
-    userId: User
+    user: Users;
 
     @Column("simple-array")
-    subjects: string[]
+    subjects: string[];
 
     @Column({length: 255})
-    description: string
+    description: string;
 
     @Column("simple-array")
-    certificates: string[]
+    certificates: string[];
 
     @Column()
-    education: string
+    education: string;
 
     @Column()
-    experience: string
+    experience: string;
+
+    @Column("decimal")
+    grade: number;
 }
