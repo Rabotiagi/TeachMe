@@ -6,9 +6,9 @@ export class File {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Message, msg => msg.id)
+    @OneToOne(() => Message, msg => msg.attachment)
     @JoinColumn()
-    msgId: Message;
+    msg: Message;
 
     @Column({length: 255})
     path: string;

@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Chat } from "./chats.entity";
 import { Users } from "./users.entity";
+import { File } from "./files.entity";
 
 @Entity()
 export class Message {
@@ -12,6 +13,9 @@ export class Message {
 
     @ManyToOne(() => Users, user => user.id)
     senderId: number;
+
+    @OneToOne(() => File, file => file.msg)
+    attachment: File
 
     @Column({length: 255})
     msg: string;

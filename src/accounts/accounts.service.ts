@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import AppDataSource from 'src/database/connection';
 import { TutorData } from 'src/database/entities/tutorData.entity';
 import { Users } from 'src/database/entities/users.entity';
-import { ArrayContains, DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { iAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
 
@@ -30,7 +30,6 @@ export class AccountsService {
         const data = this.tutorDataRepo.create(tutorData);
         const res = await this.tutorDataRepo.save(data);
 
-
         return res;
     }
 
@@ -51,18 +50,12 @@ export class AccountsService {
         return user;
     }
 
-    //TODO: fix ArrayContains bug
     async getTutors(filters: Filter): Promise<iTutorData[]>{
-        const res = await this.tutorDataRepo.find({
-            relations: {
-                user: true
-            },
-            where: {
-                subjects: ArrayContains([filters.subject])
-            }
-        });
-
-        return res;
+        return await this.tutorDataRepo
+            .createQueryBuilder('tutorData')
+            .leftJoinAndSelect('tutorData.user','users')
+            .where('tutorData.subjects @> ARRAY[:subject]', {subject: filters.subject})
+            .getMany();
     }
 
     async deleteAccount(id: number): Promise<DeleteResult>{

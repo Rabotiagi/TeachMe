@@ -10,7 +10,10 @@ export class TutorData{
     @JoinColumn()
     user: Users;
 
-    @Column("simple-array")
+    @Column({
+        type: 'text',
+        array: true
+    })
     subjects: string[];
 
     @Column({length: 255})
