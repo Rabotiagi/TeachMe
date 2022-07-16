@@ -10,3 +10,12 @@ export interface iTutorData{
     experience: string;
     grade: number;
 }
+
+export interface iUpdateTutorData {
+    subjects?: string[];
+    description?: string;
+    certificates?: string[];
+    education?: string;
+    experience?: string;
+    grade?: number;
+}

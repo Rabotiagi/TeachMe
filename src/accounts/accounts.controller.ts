@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Post, Query, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { AccountsService } from './accounts.service';
-import { AccountDto } from './dto/accounts.dto';
+import { AccountDto, UpdateAccountDto } from './dto/accounts.dto';
 import { TutorDataDto } from './dto/tutorData.dto';
 
 @Controller('accounts')
@@ -31,7 +31,14 @@ export class AccountsController {
         return await this.accountService.addTutorData(body);
     }
 
+    @Put(':id')
+    @UsePipes(IdValidationPipe)
+    async updateAccountData(@Param('id') id: string, @Body() body: UpdateAccountDto){
+        return await this.accountService.updateAccount(Number(id), body);
+    }
+
     @Delete(':id')
+    @UsePipes(IdValidationPipe)
     async deleteAccount(@Param('id') id: string){
         return await this.accountService.deleteAccount(Number(id));
     }

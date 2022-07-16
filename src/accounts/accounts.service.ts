@@ -3,7 +3,7 @@ import AppDataSource from 'src/database/connection';
 import { TutorData } from 'src/database/entities/tutorData.entity';
 import { Users } from 'src/database/entities/users.entity';
 import { DeleteResult, Repository } from 'typeorm';
-import { iAccount } from './interfaces/account.interface';
+import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
 
 type Filter = {
@@ -56,6 +56,23 @@ export class AccountsService {
             .leftJoinAndSelect('tutorData.user','users')
             .where('tutorData.subjects @> ARRAY[:subject]', {subject: filters.subject})
             .getMany();
+    }
+
+    async updateAccount(id: number, data: iUpdateAccount): Promise<iAccount>{
+        const user = await this.getAccountData(id);
+        const updateTutorData = data.tutorData;
+        delete data.tutorData;
+
+        if(updateTutorData){
+            console.log(data);
+            const tutorDataOld = await this.tutorDataRepo.findOneBy({id: user.tutorData.id});
+            this.tutorDataRepo.merge(tutorDataOld, updateTutorData);
+            await this.tutorDataRepo.save(tutorDataOld);
+        }
+
+
+        this.accountsRepo.merge(user as Users, data);
+        return await this.accountsRepo.save(user);
     }
 
     async deleteAccount(id: number): Promise<DeleteResult>{

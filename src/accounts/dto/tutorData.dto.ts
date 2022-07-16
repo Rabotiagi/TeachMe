@@ -35,3 +35,36 @@ export class TutorDataDto {
     @Min(0)
     grade: number;
 }
+
+export class UpdateTutorDataDto {
+    @IsString({each: true})
+    @IsNotEmpty()
+    @IsOptional()
+    subjects?: string[];
+    
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    description?: string;
+
+    @IsString({each: true})
+    @IsNotEmpty()
+    @IsOptional()
+    certificates?: string[];
+
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    education?: string;
+
+    @IsString()
+    @IsNotEmpty()
+    @IsOptional()
+    experience?: string;
+
+    @IsNumber()
+    @Max(5)
+    @Min(0)
+    @IsOptional()
+    grade?: number;
+}
