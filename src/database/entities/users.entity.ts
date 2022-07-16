@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
+import { Card } from "./cards.entity";
 import { TutorData } from "./tutorData.entity";
 
 @Entity()
@@ -26,6 +27,9 @@ export class Users {
 
     @OneToOne(() => TutorData, tutorData => tutorData.user)
     tutorData: TutorData
+
+    @OneToOne(() => Card, card => card.user)
+    card: Card
 
     @Column({
         nullable: true

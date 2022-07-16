@@ -12,9 +12,9 @@ export class Card {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
+    @OneToOne(() => Users, user => user.card, {onDelete: 'CASCADE'})
     @JoinColumn()
-    userId: Users;
+    user: Users;
 
     @Column()
     cardNum: string;

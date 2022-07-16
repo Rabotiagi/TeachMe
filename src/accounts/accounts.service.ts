@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import AppDataSource from 'src/database/connection';
 import { TutorData } from 'src/database/entities/tutorData.entity';
 import { Users } from 'src/database/entities/users.entity';
+import { encryptData } from 'src/utils/encryption';
 import { DeleteResult, Repository } from 'typeorm';
 import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
@@ -21,9 +22,10 @@ export class AccountsService {
     }
 
     async createAccount(accountData: iAccount): Promise<iAccount>{
+        accountData.password = encryptData(accountData.password);
+
         const user = this.accountsRepo.create(accountData);
-        const res = await this.accountsRepo.save(user);
-        return res;
+        return await this.accountsRepo.save(user);
     }
 
     async addTutorData(tutorData: iTutorData): Promise<iTutorData>{
