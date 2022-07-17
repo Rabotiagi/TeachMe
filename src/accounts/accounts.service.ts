@@ -50,13 +50,13 @@ export class AccountsService {
     }
 
     async getAccountData(id: number): Promise<iAccount>{
-        const user = await this.accountsRepo.findOne({
+        const {password, ...rest} = await this.accountsRepo.findOne({
             relations: {
                 tutorData: true
             },
             where: {id}
         });
-        return user;
+        return rest;
     }
 
     async getTutors(filters: Filter): Promise<iTutorData[]>{
@@ -93,12 +93,10 @@ export class AccountsService {
         delete data.tutorData;
 
         if(updateTutorData){
-            console.log(data);
             const tutorDataOld = await this.tutorDataRepo.findOneBy({id: user.tutorData.id});
             this.tutorDataRepo.merge(tutorDataOld, updateTutorData);
             await this.tutorDataRepo.save(tutorDataOld);
         }
-
 
         this.accountsRepo.merge(user as Users, data);
         return await this.accountsRepo.save(user);

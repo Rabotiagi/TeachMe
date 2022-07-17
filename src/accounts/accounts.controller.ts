@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
+import { JwtGuard } from 'src/appGuards/jwt-auth.guard';
 import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { QueryValidationPipe } from 'src/appPipes/queryValidate.pipe';
 import { AccountsService } from './accounts.service';
@@ -13,12 +14,14 @@ export class AccountsController {
     ){}
 
     @Get('tutors')
+    @UseGuards(JwtGuard)
     @UsePipes(new QueryValidationPipe())
     async getTutors(@Query() params: {subject: string, grade: number, minPrice: number, maxPrice: number}){
         return await this.accountService.getTutors(params);
     }
 
     @Get(':id')
+    @UseGuards(JwtGuard)
     @UsePipes(IdValidationPipe)
     async getAccount(@Param('id') id: string){
         return await this.accountService.getAccountData(Number(id));
@@ -30,17 +33,20 @@ export class AccountsController {
     }
 
     @Post('tutor-data')
+    @UseGuards(JwtGuard)
     async postTutorData(@Body() body: TutorDataDto){
         return await this.accountService.addTutorData(body as iTutorData);
     }
 
     @Put(':id')
+    @UseGuards(JwtGuard)
     @UsePipes(IdValidationPipe)
     async updateAccountData(@Param('id') id: string, @Body() body: UpdateAccountDto){
         return await this.accountService.updateAccount(Number(id), body);
     }
 
     @Delete(':id')
+    @UseGuards(JwtGuard)
     @UsePipes(IdValidationPipe)
     async deleteAccount(@Param('id') id: string){
         return await this.accountService.deleteAccount(Number(id));
