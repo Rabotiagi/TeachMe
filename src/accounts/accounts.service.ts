@@ -1,8 +1,9 @@
+require('dotenv').config();
+import { hash } from 'bcrypt';
 import { Injectable } from '@nestjs/common';
 import AppDataSource from 'src/database/connection';
 import { TutorData } from 'src/database/entities/tutorData.entity';
 import { Users } from 'src/database/entities/users.entity';
-import { encryptData } from 'src/utils/encryption';
 import { DeleteResult, Repository } from 'typeorm';
 import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
@@ -25,7 +26,10 @@ export class AccountsService {
     }
 
     async createAccount(accountData: iAccount): Promise<iAccount>{
-        accountData.password = encryptData(accountData.password);
+        accountData.password = await hash(
+            accountData.password, 
+            Number(process.env.SALT)
+        );
 
         const user = this.accountsRepo.create(accountData);
         return await this.accountsRepo.save(user);
@@ -38,11 +42,11 @@ export class AccountsService {
         return res;
     }
 
-    async checkPassword(email: string): Promise<string>{
+    async processLogin(email: string): Promise<iAccount>{
         const user = await this.accountsRepo.findOne({
             where:{email}
         });
-        return user.password;
+        return user;
     }
 
     async getAccountData(id: number): Promise<iAccount>{
@@ -56,11 +60,29 @@ export class AccountsService {
     }
 
     async getTutors(filters: Filter): Promise<iTutorData[]>{
-        let dbQuery = this.tutorDataRepo.createQueryBuilder('tutorData').leftJoinAndSelect('tutorData.user','users');
-        if(filters.subject) dbQuery = dbQuery.where('tutorData.subjects @> ARRAY[:subject]', {subject: filters.subject});
-        if(filters.grade) dbQuery = dbQuery.andWhere('tutorData.grade >= :grade', {grade: filters.grade});
-        if(filters.minPrice) dbQuery = dbQuery.andWhere('tutorData.maxPrice >= :minPrice', {minPrice: filters.minPrice});
-        if(filters.maxPrice) dbQuery = dbQuery.andWhere('tutorData.minPrice <= :maxPrice', {maxPrice: filters.maxPrice});
+        let dbQuery = this.tutorDataRepo
+            .createQueryBuilder('tutorData')
+            .leftJoinAndSelect('tutorData.user','users');
+        
+        if(filters.subject) dbQuery = dbQuery.where(
+            'tutorData.subjects @> ARRAY[:subject]', 
+            {subject: filters.subject}
+        );
+
+        if(filters.grade) dbQuery = dbQuery.andWhere(
+            'tutorData.grade >= :grade', 
+            {grade: filters.grade}
+        );
+
+        if(filters.minPrice) dbQuery = dbQuery.andWhere(
+            'tutorData.maxPrice >= :minPrice', 
+            {minPrice: filters.minPrice}
+        );
+
+        if(filters.maxPrice) dbQuery = dbQuery.andWhere(
+            'tutorData.minPrice <= :maxPrice', 
+            {maxPrice: filters.maxPrice}
+        );
 
         return await dbQuery.getMany();
     }
