@@ -8,7 +8,10 @@ import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
 
 type Filter = {
-    subject: string
+    subject?: string,
+    grade?: number,
+    minPrice?: number
+    maxPrice?: number
 };
 
 @Injectable()
@@ -53,11 +56,13 @@ export class AccountsService {
     }
 
     async getTutors(filters: Filter): Promise<iTutorData[]>{
-        return await this.tutorDataRepo
-            .createQueryBuilder('tutorData')
-            .leftJoinAndSelect('tutorData.user','users')
-            .where('tutorData.subjects @> ARRAY[:subject]', {subject: filters.subject})
-            .getMany();
+        let dbQuery = this.tutorDataRepo.createQueryBuilder('tutorData').leftJoinAndSelect('tutorData.user','users');
+        if(filters.subject) dbQuery = dbQuery.where('tutorData.subjects @> ARRAY[:subject]', {subject: filters.subject});
+        if(filters.grade) dbQuery = dbQuery.andWhere('tutorData.grade >= :grade', {grade: filters.grade});
+        if(filters.minPrice) dbQuery = dbQuery.andWhere('tutorData.maxPrice >= :minPrice', {minPrice: filters.minPrice});
+        if(filters.maxPrice) dbQuery = dbQuery.andWhere('tutorData.minPrice <= :maxPrice', {maxPrice: filters.maxPrice});
+
+        return await dbQuery.getMany();
     }
 
     async updateAccount(id: number, data: iUpdateAccount): Promise<iAccount>{

@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
+import { QueryValidationPipe } from 'src/appPipes/queryValidate.pipe';
 import { AccountsService } from './accounts.service';
 import { AccountDto, UpdateAccountDto } from './dto/accounts.dto';
 import { TutorDataDto } from './dto/tutorData.dto';
+import { iTutorData } from './interfaces/tutorData.interface';
 
 @Controller('accounts')
 export class AccountsController {
@@ -11,7 +13,8 @@ export class AccountsController {
     ){}
 
     @Get('tutors')
-    async getTutors(@Query() params: {subject: string}){
+    @UsePipes(new QueryValidationPipe())
+    async getTutors(@Query() params: {subject: string, grade: number, minPrice: number, maxPrice: number}){
         return await this.accountService.getTutors(params);
     }
 
@@ -28,7 +31,7 @@ export class AccountsController {
 
     @Post('tutor-data')
     async postTutorData(@Body() body: TutorDataDto){
-        return await this.accountService.addTutorData(body);
+        return await this.accountService.addTutorData(body as iTutorData);
     }
 
     @Put(':id')

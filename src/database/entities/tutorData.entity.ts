@@ -30,4 +30,10 @@ export class TutorData{
 
     @Column("decimal")
     grade: number;
+
+    @Column()
+    minPrice: number;
+
+    @Column()
+    maxPrice: number;
 }

@@ -9,6 +9,8 @@ export interface iTutorData{
     education: string;
     experience: string;
     grade: number;
+    minPrice: number;
+    maxPrice: number;
 }
 
 export interface iUpdateTutorData {
@@ -18,4 +20,6 @@ export interface iUpdateTutorData {
     education?: string;
     experience?: string;
     grade?: number;
+    minPrice?: number;
+    maxPrice?: number;
 }
