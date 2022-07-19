@@ -9,7 +9,7 @@ export class RefTokens {
     @Column()
     refToken: string;
 
-    @OneToOne(() => Users)
+    @OneToOne(() => Users, {onDelete: 'CASCADE'})
     @JoinColumn()
     user: Users;
 }

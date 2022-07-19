@@ -6,7 +6,7 @@ export class File {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Message, msg => msg.attachment)
+    @OneToOne(() => Message, msg => msg.attachment, {onDelete: 'CASCADE'})
     @JoinColumn()
     msg: Message;
 

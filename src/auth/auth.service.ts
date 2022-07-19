@@ -1,4 +1,4 @@
-import { ConsoleLogger, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccountsService } from 'src/accounts/accounts.service';
 import { compare } from 'bcrypt';
@@ -6,7 +6,6 @@ import { iAccount } from 'src/accounts/interfaces/account.interface';
 import { Repository } from 'typeorm';
 import { RefTokens } from 'src/database/entities/refTokens.entity';
 import AppDataSource from 'src/database/connection';
-import { Users } from 'src/database/entities/users.entity';
 
 type JwtPayload = {id: number, name: string};
 
@@ -41,7 +40,7 @@ export class AuthService {
             .where('ref_tokens.user = :userId', {userId: user.id})
             .getOne();
 
-        await this.refTokensRepo.delete(oldRefToken.id);
+        if(oldRefToken) await this.refTokensRepo.delete(oldRefToken.id);
         const tokenRecord = this.refTokensRepo.create({refToken, user});
         await this.refTokensRepo.save(tokenRecord);
 

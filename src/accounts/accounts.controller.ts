@@ -1,11 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, UsePipes } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from 'src/appGuards/jwt-auth.guard';
-import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { QueryValidationPipe } from 'src/appPipes/queryValidate.pipe';
 import { AccountsService } from './accounts.service';
 import { AccountDto, UpdateAccountDto } from './dto/accounts.dto';
 import { TutorDataDto } from './dto/tutorData.dto';
-import { iTutorData } from './interfaces/tutorData.interface';
 
 @Controller('accounts')
 export class AccountsController {
@@ -13,18 +12,17 @@ export class AccountsController {
         private readonly accountService: AccountsService
     ){}
 
+    @Get()
+    @UseGuards(JwtGuard)
+    async getAccount(@Req() req){
+        return await this.accountService.getAccountData(req.user.id);
+    }
+
     @Get('tutors')
     @UseGuards(JwtGuard)
     @UsePipes(new QueryValidationPipe())
     async getTutors(@Query() params: {subject: string, grade: number, minPrice: number, maxPrice: number}){
         return await this.accountService.getTutors(params);
-    }
-
-    @Get(':id')
-    @UseGuards(JwtGuard)
-    @UsePipes(IdValidationPipe)
-    async getAccount(@Param('id') id: string){
-        return await this.accountService.getAccountData(Number(id));
     }
 
     @Post()
@@ -34,21 +32,36 @@ export class AccountsController {
 
     @Post('tutor-data')
     @UseGuards(JwtGuard)
-    async postTutorData(@Body() body: TutorDataDto){
-        return await this.accountService.addTutorData(body as iTutorData);
+    async postTutorData(@Req() req, @Body() body: TutorDataDto){
+        body.user = req.user.id;
+        return await this.accountService.addTutorData(body);
     }
 
-    @Put(':id')
+    @Post('photo')
     @UseGuards(JwtGuard)
-    @UsePipes(IdValidationPipe)
-    async updateAccountData(@Param('id') id: string, @Body() body: UpdateAccountDto){
-        return await this.accountService.updateAccount(Number(id), body);
+    @UseInterceptors(FileInterceptor('photo', {dest: './src/database/files'}))
+    async uploadAccountPhoto(@Req() req, @UploadedFile() file: Express.Multer.File){
+        if(!file) throw new BadRequestException('Missing file');
+        return await this.accountService.uploadAccountPhoto(req.user.id, file.filename);
     }
 
-    @Delete(':id')
+    @Put()
     @UseGuards(JwtGuard)
-    @UsePipes(IdValidationPipe)
-    async deleteAccount(@Param('id') id: string){
-        return await this.accountService.deleteAccount(Number(id));
+    async updateAccountData(@Req() req, @Body() body: UpdateAccountDto){
+        return await this.accountService.updateAccount(req.user.id, body);
+    }
+
+    @Put('photo')
+    @UseGuards(JwtGuard)
+    @UseInterceptors(FileInterceptor('photo', {dest: './src/database/files'}))
+    async updateAccountPhoto(@Req() req, @UploadedFile() file: Express.Multer.File){
+        if(!file) throw new BadRequestException('Missing file');
+        return await this.accountService.updateAccountPhoto(req.user.id, file.filename);
+    }
+
+    @Delete()
+    @UseGuards(JwtGuard)
+    async deleteAccount(@Req() req){
+        return await this.accountService.deleteAccount(req.user.id);
     }
 }

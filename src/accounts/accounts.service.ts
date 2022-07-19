@@ -7,6 +7,7 @@ import { Users } from 'src/database/entities/users.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
+import { rm } from 'fs/promises';
 
 type Filter = {
     subject?: string,
@@ -40,6 +41,13 @@ export class AccountsService {
         const res = await this.tutorDataRepo.save(data);
 
         return res;
+    }
+
+    async uploadAccountPhoto(id: number, fileName: string): Promise<iAccount>{
+        const user = await this.getAccountData(id);
+
+        this.accountsRepo.merge(user as Users, {photo: fileName});
+        return await this.accountsRepo.save(user);
     }
 
     async processLogin(email: string): Promise<iAccount>{
@@ -99,6 +107,14 @@ export class AccountsService {
         }
 
         this.accountsRepo.merge(user as Users, data);
+        return await this.accountsRepo.save(user);
+    }
+
+    async updateAccountPhoto(id: number, newFileName: string): Promise<iAccount>{
+        const user = await this.getAccountData(id);
+        await rm('./src/database/files/' + user.photo);
+
+        this.accountsRepo.merge(user as Users, {photo: newFileName});
         return await this.accountsRepo.save(user);
     }
 

@@ -6,7 +6,7 @@ export class TutorDataDto {
     @IsOptional()
     id?: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     user: Users;
 
     @IsString({each: true})

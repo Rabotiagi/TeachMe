@@ -8,13 +8,13 @@ export class Message {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Chat, chat => chat.id)
+    @ManyToOne(() => Chat, chat => chat.id, {onDelete: 'CASCADE'})
     chatId: Chat;
 
-    @ManyToOne(() => Users, user => user.id)
+    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
     senderId: number;
 
-    @OneToOne(() => File, file => file.msg)
+    @OneToOne(() => File, file => file.msg, {onDelete: 'CASCADE'})
     attachment: File
 
     @Column({length: 255})
