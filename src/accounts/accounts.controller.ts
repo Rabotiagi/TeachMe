@@ -1,10 +1,11 @@
-import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UploadedFile, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtGuard } from 'src/appGuards/jwt-auth.guard';
 import { QueryValidationPipe } from 'src/appPipes/queryValidate.pipe';
 import { AccountsService } from './accounts.service';
 import { AccountDto, UpdateAccountDto } from './dto/accounts.dto';
 import { TutorDataDto } from './dto/tutorData.dto';
+import { Response } from 'express';
 
 @Controller('accounts')
 export class AccountsController {
@@ -12,17 +13,23 @@ export class AccountsController {
         private readonly accountService: AccountsService
     ){}
 
-    @Get()
-    @UseGuards(JwtGuard)
-    async getAccount(@Req() req){
-        return await this.accountService.getAccountData(req.user.id);
-    }
-
     @Get('tutors')
     @UseGuards(JwtGuard)
     @UsePipes(new QueryValidationPipe())
     async getTutors(@Query() params: {subject: string, grade: number, minPrice: number, maxPrice: number}){
         return await this.accountService.getTutors(params);
+    }
+
+    @Get(':id')
+    @UseGuards(JwtGuard)
+    async getAccount(@Param('id') id: string){
+        return await this.accountService.getAccountData(Number(id));
+    }
+
+    @Get(':id/photo')
+    @UseGuards(JwtGuard)
+    async getAccountPhoto(@Param('id') id: string, @Res() res: Response){
+        await this.accountService.getAccountPhoto(Number(id), res);
     }
 
     @Post()

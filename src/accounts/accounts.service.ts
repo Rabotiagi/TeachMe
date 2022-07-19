@@ -7,7 +7,9 @@ import { Users } from 'src/database/entities/users.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
+import { createReadStream } from 'fs';
 import { rm } from 'fs/promises';
+import { Response } from 'express';
 
 type Filter = {
     subject?: string,
@@ -65,6 +67,13 @@ export class AccountsService {
             where: {id}
         });
         return rest;
+    }
+
+    async getAccountPhoto(id: number, res: Response){
+        const {photo} = await this.accountsRepo.findOne({where:{id}});
+        const file = createReadStream('./src/database/files/' + photo);
+
+        file.pipe(res);
     }
 
     async getTutors(filters: Filter): Promise<iTutorData[]>{
