@@ -114,7 +114,7 @@ export class AccountsService {
         const updateTutorData = updateData.tutorData;
         delete updateData.tutorData;
 
-        if(updateTutorData){
+        if(updateTutorData && user.tutorData){
             const tutorDataOld = await this.tutorDataRepo.findOneBy({id: user.tutorData.id});
             this.tutorDataRepo.merge(tutorDataOld, updateTutorData);
             await this.tutorDataRepo.save(tutorDataOld);

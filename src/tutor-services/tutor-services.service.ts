@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AccountsService } from 'src/accounts/accounts.service';
 import AppDataSource from 'src/database/connection';
 import { Services } from 'src/database/entities/services.entity';
@@ -59,6 +59,8 @@ export class TutorServicesService {
 
     async getServices(tutorId: number): Promise<iService[]>{
         const {tutorData} = await this.accountsService.getAccountData(tutorId);
+        if(!tutorData) throw new BadRequestException('Missing tutor data');
+
         const {services} = await this.tutorDataRepo.findOne({
             where: {id: tutorData.id},
             relations: {services: true}
@@ -68,10 +70,11 @@ export class TutorServicesService {
 
     async createService(tutorId: number, serviceData: iService): Promise<iService>{
         const { tutorData } = await this.accountsService.getAccountData(tutorId);
+        if(!tutorData) throw new BadRequestException('Missing tutor data');
+
         await this.updatePriceRange(tutorData.id, serviceData);
 
         serviceData.tutor = tutorData as TutorData;
-
         const data = this.servicesRepo.create(serviceData);
         return await this.servicesRepo.save(data);
     }
