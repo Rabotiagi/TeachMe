@@ -7,16 +7,10 @@ import { Users } from 'src/database/entities/users.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { iAccount, iUpdateAccount } from './interfaces/account.interface';
 import { iTutorData } from './interfaces/tutorData.interface';
+import { Filter } from './types/filter';
 import { createReadStream } from 'fs';
 import { rm } from 'fs/promises';
 import { Response } from 'express';
-
-type Filter = {
-    subject?: string,
-    grade?: number,
-    minPrice?: number
-    maxPrice?: number
-};
 
 @Injectable()
 export class AccountsService {
@@ -60,12 +54,23 @@ export class AccountsService {
     }
 
     async getAccountData(id: number): Promise<iAccount>{
+        // TODO: try to rewrite to JOINING 3 tables 
+        // [USERS, TUTOR_DATA, SERVICES]
+
         const {password, ...rest} = await this.accountsRepo.findOne({
             relations: {
                 tutorData: true
             },
             where: {id}
         });
+
+        // const {password, ...rest} = await this.accountsRepo
+        //     .createQueryBuilder('users')
+        //     .innerJoin('users.tutorData', 'tutor_data')
+        //     .innerJoin('users.tutorData.services', 'td_services')
+        //     .where('users.id = :id', {id})
+        //     .getOne();
+
         return rest;
     }
 
@@ -104,10 +109,10 @@ export class AccountsService {
         return await dbQuery.getMany();
     }
 
-    async updateAccount(id: number, data: iUpdateAccount): Promise<iAccount>{
+    async updateAccount(id: number, updateData: iUpdateAccount): Promise<iAccount>{
         const user = await this.getAccountData(id);
-        const updateTutorData = data.tutorData;
-        delete data.tutorData;
+        const updateTutorData = updateData.tutorData;
+        delete updateData.tutorData;
 
         if(updateTutorData){
             const tutorDataOld = await this.tutorDataRepo.findOneBy({id: user.tutorData.id});
@@ -115,7 +120,7 @@ export class AccountsService {
             await this.tutorDataRepo.save(tutorDataOld);
         }
 
-        this.accountsRepo.merge(user as Users, data);
+        this.accountsRepo.merge(user as Users, updateData);
         return await this.accountsRepo.save(user);
     }
 
@@ -128,7 +133,6 @@ export class AccountsService {
     }
 
     async deleteAccount(id: number): Promise<DeleteResult>{
-        const results = await this.accountsRepo.delete(id);
-        return results;
+        return await this.accountsRepo.delete(id);
     }
 }

@@ -16,5 +16,7 @@ export interface iUpdateAccount{
     firstName?: string;
     lastName?: string;
     photo?: string;
-    tutorData?: iUpdateTutorData
+    tutorData?: iUpdateTutorData;
+    minPrice?: number;
+    maxPrice?: number;
 }

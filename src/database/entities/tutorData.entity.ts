@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Services } from "./services.entity";
 import { Users } from "./users.entity";
 
 @Entity()
@@ -31,9 +32,12 @@ export class TutorData{
     @Column("decimal")
     grade: number;
 
-    @Column()
+    @OneToMany(() => Services, service => service.tutor)
+    services: Services[];
+
+    @Column({default: 0})
     minPrice: number;
 
-    @Column()
+    @Column({default: 0})
     maxPrice: number;
 }

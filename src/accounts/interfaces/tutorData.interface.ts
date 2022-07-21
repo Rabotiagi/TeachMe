@@ -1,3 +1,4 @@
+import { Services } from "src/database/entities/services.entity";
 import { Users } from "src/database/entities/users.entity";
 
 export interface iTutorData{
@@ -9,8 +10,7 @@ export interface iTutorData{
     education: string;
     experience: string;
     grade: number;
-    minPrice: number;
-    maxPrice: number;
+    services: Services[];
 }
 
 export interface iUpdateTutorData {

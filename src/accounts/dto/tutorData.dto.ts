@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Max, Min } from "class-validator";
+import { Services } from "src/database/entities/services.entity";
 import { Users } from "src/database/entities/users.entity";
 
 export class TutorDataDto {
@@ -34,11 +35,9 @@ export class TutorDataDto {
     @Min(0)
     grade: number;
 
-    @IsNumber()
-    minPrice: number;
-
-    @IsNumber()
-    maxPrice: number;
+    @IsObject({each: true})
+    @IsOptional()
+    services: Services[]
 }
 
 export class UpdateTutorDataDto {
@@ -72,12 +71,4 @@ export class UpdateTutorDataDto {
     @Min(0)
     @IsOptional()
     grade?: number;
-
-    @IsNumber()
-    @IsOptional()
-    minPrice?: number;
-
-    @IsNumber()
-    @IsOptional()
-    maxPrice?: number;
 }

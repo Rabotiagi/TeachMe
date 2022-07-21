@@ -9,6 +9,7 @@ import { TutorData } from "./entities/tutorData.entity";
 import { Users } from "./entities/users.entity";
 import { File } from "./entities/files.entity";
 import { RefTokens } from "./entities/refTokens.entity";
+import { Services } from "./entities/services.entity";
 
 const AppDataSource = new DataSource({
     type: "postgres",
@@ -17,7 +18,7 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB,
-    entities: [Users, TutorData, Review, Message, File, Chat, Card, RefTokens],
+    entities: [Users, TutorData, Review, Message, File, Chat, Card, RefTokens, Services],
     synchronize: true,
     logging: true,
 });
