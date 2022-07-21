@@ -6,6 +6,10 @@ import { AccountsService } from './accounts.service';
 import { AccountDto, UpdateAccountDto } from './dto/accounts.dto';
 import { TutorDataDto } from './dto/tutorData.dto';
 import { Response } from 'express';
+import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
+import { Users } from 'src/database/entities/users.entity';
+import AppDataSource from 'src/database/connection';
+import { Filter } from './types/filter';
 
 @Controller('accounts')
 export class AccountsController {
@@ -16,18 +20,20 @@ export class AccountsController {
     @Get('tutors')
     @UseGuards(JwtGuard)
     @UsePipes(new QueryValidationPipe())
-    async getTutors(@Query() params: {subject: string, grade: number, minPrice: number, maxPrice: number}){
+    async getTutors(@Query() params: Filter){
         return await this.accountService.getTutors(params);
     }
 
     @Get(':id')
     @UseGuards(JwtGuard)
+    @UsePipes(new IdValidationPipe(Users))
     async getAccount(@Param('id') id: string){
         return await this.accountService.getAccountData(Number(id));
     }
 
     @Get(':id/photo')
     @UseGuards(JwtGuard)
+    @UsePipes(new IdValidationPipe(Users))
     async getAccountPhoto(@Param('id') id: string, @Res() res: Response){
         await this.accountService.getAccountPhoto(Number(id), res);
     }
