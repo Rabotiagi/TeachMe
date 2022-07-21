@@ -3,6 +3,7 @@ import { AccountsService } from 'src/accounts/accounts.service';
 import AppDataSource from 'src/database/connection';
 import { Services } from 'src/database/entities/services.entity';
 import { TutorData } from 'src/database/entities/tutorData.entity';
+import { StripeService } from 'src/stripe/stripe.service';
 import { DeleteResult, Repository } from 'typeorm';
 import { iService, iUpdateService } from './interfaces/service.interface';
 
@@ -11,7 +12,8 @@ export class TutorServicesService {
     constructor(
         private readonly accountsService: AccountsService,
         private readonly tutorDataRepo: Repository<TutorData>,
-        private readonly servicesRepo: Repository<Services>
+        private readonly servicesRepo: Repository<Services>,
+        private readonly stripeService: StripeService
     ){
         this.tutorDataRepo = AppDataSource.getRepository(TutorData);
         this.servicesRepo = AppDataSource.getRepository(Services);
@@ -65,15 +67,24 @@ export class TutorServicesService {
             where: {id: tutorData.id},
             relations: {services: true}
         });
+        services.forEach(s => delete s.serviceToken);
+
         return services;
     }
 
     async createService(tutorId: number, serviceData: iService): Promise<iService>{
-        const { tutorData } = await this.accountsService.getAccountData(tutorId);
+        const { tutorData, firstName, lastName } = await this
+            .accountsService
+            .getAccountData(tutorId);
         if(!tutorData) throw new BadRequestException('Missing tutor data');
 
         await this.updatePriceRange(tutorData.id, serviceData);
+        const serviceToken = await this.stripeService.createProductToken(
+            serviceData, 
+            firstName + ' ' + lastName
+        );
 
+        serviceData.serviceToken = serviceToken;
         serviceData.tutor = tutorData as TutorData;
         const data = this.servicesRepo.create(serviceData);
         return await this.servicesRepo.save(data);
@@ -84,18 +95,26 @@ export class TutorServicesService {
             where: {id: serviceId},
             relations: {tutor: true}
         });
-        if(updateData.price) await this.updatePriceRange(oldService.tutor.id, updateData);
+
+        if(updateData.price){
+            await this.stripeService.updateProductPrice(
+                oldService.serviceToken, 
+                updateData.price
+            );
+            await this.updatePriceRange(oldService.tutor.id, updateData);
+        }
 
         this.servicesRepo.merge(oldService, updateData);
         return await this.servicesRepo.save(oldService);
     }
 
     async deleteService(serviceId: number): Promise<DeleteResult>{
-        const {tutor} = await this.servicesRepo.findOne({
+        const {tutor, serviceToken} = await this.servicesRepo.findOne({
             where: {id: serviceId},
             relations: {tutor: true}
         });
 
+        await this.stripeService.deleteProduct(serviceToken);
         const res = await this.servicesRepo.delete(serviceId);
         await this.calculatePriceRange(tutor.id);
 

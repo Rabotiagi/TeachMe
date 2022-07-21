@@ -19,8 +19,5 @@ export class Services{
     price: number;
 
     @Column({default: ''})
-    itemToken: string;
-
-    @Column({default: ''})
-    priceToken: string;
+    serviceToken: string;
 }

@@ -5,13 +5,10 @@ export interface iService{
     tutor: TutorData;
     name: string;
     price: number;
-    itemToken: string;
-    priceToken: string;
+    serviceToken: string;
 }
 
 export interface iUpdateService{
     name?: string;
     price?: number;
-    // itemToken?: string;
-    // priceToken?: string;
 }
