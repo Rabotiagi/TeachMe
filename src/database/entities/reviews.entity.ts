@@ -1,17 +1,18 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { TutorData } from "./tutorData.entity";
 import { Users } from "./users.entity";
 
 @Entity()
-export class Review {
+export class Reviews {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
-    tutorId: Users;
+    @ManyToOne(() => TutorData, tutor => tutor.reviews, {onDelete: 'CASCADE'})
+    tutor: TutorData;
 
     @OneToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
     @JoinColumn()
-    reviewerId: Users;
+    reviewer: Users;
 
     @Column({length: 255})
     review: string;

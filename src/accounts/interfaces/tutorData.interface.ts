@@ -1,3 +1,4 @@
+import { Reviews } from "src/database/entities/reviews.entity";
 import { Services } from "src/database/entities/services.entity";
 import { Users } from "src/database/entities/users.entity";
 
@@ -11,6 +12,7 @@ export interface iTutorData{
     experience: string;
     grade: number;
     services: Services[];
+    reviews: Reviews[];
 }
 
 export interface iUpdateTutorData {

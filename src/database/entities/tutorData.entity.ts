@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Reviews } from "./reviews.entity";
 import { Services } from "./services.entity";
 import { Users } from "./users.entity";
 
@@ -34,6 +35,9 @@ export class TutorData{
 
     @OneToMany(() => Services, service => service.tutor)
     services: Services[];
+
+    @OneToMany(() => Reviews, review => review.tutor)
+    reviews: Reviews[]
 
     @Column({default: 0})
     minPrice: number;

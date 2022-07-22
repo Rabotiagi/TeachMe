@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Max, Min } from "class-validator";
+import { Reviews } from "src/database/entities/reviews.entity";
 import { Services } from "src/database/entities/services.entity";
 import { Users } from "src/database/entities/users.entity";
 
@@ -32,8 +33,12 @@ export class TutorDataDto {
 
     @IsNumber()
     @Max(5)
-    @Min(0)
+    @Min(1)
     grade: number;
+    
+    @IsObject({each: true})
+    @IsOptional()
+    reviews: Reviews[]
 
     @IsObject({each: true})
     @IsOptional()
@@ -65,10 +70,4 @@ export class UpdateTutorDataDto {
     @IsNotEmpty()
     @IsOptional()
     experience?: string;
-
-    @IsNumber()
-    @Max(5)
-    @Min(0)
-    @IsOptional()
-    grade?: number;
 }

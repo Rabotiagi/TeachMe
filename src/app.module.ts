@@ -6,9 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { TutorServicesModule } from './tutor-services/tutor-services.module';
 import { StripeModule } from './stripe/stripe.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
-  imports: [AccountsModule, AuthModule, PurchaseModule, TutorServicesModule, StripeModule],
+  imports: [AccountsModule, AuthModule, PurchaseModule, TutorServicesModule, StripeModule, ReviewsModule],
   controllers: [AppController],
   providers: [AppService],
 })
