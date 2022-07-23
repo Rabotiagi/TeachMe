@@ -6,7 +6,7 @@ import { TutorData } from 'src/database/entities/tutorData.entity';
 import { StripeService } from 'src/stripe/stripe.service';
 import { TriggerService } from 'src/trigger/trigger.service';
 import { DeleteResult, Repository } from 'typeorm';
-import { iService, iUpdateService } from './interfaces/service.interface';
+import { iPurchaseItem, iService, iUpdateService } from './interfaces/service.interface';
 
 @Injectable()
 export class TutorServicesService {
@@ -52,6 +52,17 @@ export class TutorServicesService {
 
         await this.triggerService.calculatePriceRange(tutorData.id);
         return res;
+    }
+
+    async createCheckout(itemsToBuy: iPurchaseItem[]){
+        const purchaseData = [];
+        for(let i = 0; i < itemsToBuy.length; i++){
+            const { serviceToken } = await this.servicesRepo.findOneBy({id: itemsToBuy[i].serviceId});
+            const priceToken = await this.stripeService.getPriceToken(serviceToken);
+            purchaseData.push({price: priceToken, quantity: itemsToBuy[i].quantity});
+        }
+        const checkoutSession = await this.stripeService.getCheckoutSession(purchaseData);
+        return checkoutSession.url;
     }
 
     async updateService(serviceId: number, updateData: iUpdateService): Promise<iService>{

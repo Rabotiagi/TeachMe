@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { TutorData } from "src/database/entities/tutorData.entity";
 
 export class ServiceDto {
@@ -29,3 +29,21 @@ export class UpdateServiceDto {
     @IsOptional()
     price?: number;
 }
+
+// TODO: rewrite DTO class for Payment data in request body
+
+// class PurchasItem {
+//     @IsNumber()
+//     @IsNotEmpty()
+//     serviceId: number;
+
+//     @IsNumber()
+//     @Min(1)
+//     @IsNotEmpty()
+//     quantity: number;
+// }
+
+// export class PurchaseItemDto {
+//     @ValidateNested({ each: true })
+//     items: PurchasItem[];
+// }

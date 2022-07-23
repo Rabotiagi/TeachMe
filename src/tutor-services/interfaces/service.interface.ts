@@ -12,3 +12,8 @@ export interface iUpdateService{
     name?: string;
     price?: number;
 }
+
+export interface iPurchaseItem{
+    serviceId: number;
+    quantity: number;
+}

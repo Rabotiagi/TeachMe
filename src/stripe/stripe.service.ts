@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { Injectable } from '@nestjs/common';
-import { iService } from 'src/tutor-services/interfaces/service.interface';
+import { iPurchaseItem, iService } from 'src/tutor-services/interfaces/service.interface';
 import Stripe from 'stripe';
 
 @Injectable()
@@ -8,6 +8,15 @@ export class StripeService {
     constructor(private readonly stripe: Stripe){
         this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
             apiVersion: '2020-08-27'
+        });
+    }
+
+    async getCheckoutSession(itemsToBuy: iPurchaseItem[]){
+        return await this.stripe.checkout.sessions.create({
+            line_items: itemsToBuy,
+            mode: 'payment',
+            success_url: process.env.SERVER_DOMAIN + 'services/payment/success',
+            cancel_url: process.env.SERVER_DOMAIN + 'services/payment/cancel'
         });
     }
 
@@ -26,7 +35,6 @@ export class StripeService {
         });
 
         await this.createProductPrice(product.id, serviceData.price);
-
         return product.id;
     }
 
@@ -34,7 +42,7 @@ export class StripeService {
         const { data } = await this.stripe.prices.list({
             product: productToken
         });
-        console.log(data);
+
         return data.filter(price => price.active).pop().id;
     }
 
