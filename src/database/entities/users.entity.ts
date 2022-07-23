@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import { Card } from "./cards.entity";
+import { Cards } from "./cards.entity";
 import { TutorData } from "./tutorData.entity";
 
 @Entity()
@@ -28,8 +28,8 @@ export class Users {
     @OneToOne(() => TutorData, tutorData => tutorData.user)
     tutorData: TutorData
 
-    @OneToOne(() => Card, card => card.user)
-    card: Card
+    @OneToOne(() => Cards, card => card.user)
+    card: Cards
 
     @Column({
         nullable: true

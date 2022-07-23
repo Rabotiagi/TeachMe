@@ -8,7 +8,7 @@ import {
 import { Users } from './users.entity';
 
 @Entity()
-export class Card {
+export class Cards {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -23,5 +23,5 @@ export class Card {
     date: string;
 
     @Column()
-    cvc: number;
+    cvc: string;
 }

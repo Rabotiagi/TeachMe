@@ -1,7 +1,7 @@
 require("dotenv").config();
 import "reflect-metadata";
 import {DataSource} from 'typeorm';
-import { Card } from "./entities/cards.entity";
+import { Cards } from "./entities/cards.entity";
 import { Chat } from "./entities/chats.entity";
 import { Message } from "./entities/messages.entity";
 import { Reviews } from "./entities/reviews.entity";
@@ -18,7 +18,7 @@ const AppDataSource = new DataSource({
     username: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB,
-    entities: [Users, TutorData, Reviews, Message, File, Chat, Card, RefTokens, Services],
+    entities: [Users, TutorData, Reviews, Message, File, Chat, Cards, RefTokens, Services],
     synchronize: true,
     logging: true,
 });

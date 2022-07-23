@@ -10,6 +10,7 @@ import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { Users } from 'src/database/entities/users.entity';
 import { Filter } from './types/filter';
 import { iTutorData } from './interfaces/tutorData.interface';
+import { DuplicationGuard } from 'src/appGuards/duplication.guard';
 
 @Controller('accounts')
 export class AccountsController {
@@ -44,14 +45,14 @@ export class AccountsController {
     }
 
     @Post('tutor-data')
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard, DuplicationGuard)
     async postTutorData(@Req() req, @Body() body: TutorDataDto){
         body.user = req.user.id;
         return await this.accountService.addTutorData(body as iTutorData);
     }
 
     @Post('photo')
-    @UseGuards(JwtGuard)
+    @UseGuards(JwtGuard, DuplicationGuard)
     @UseInterceptors(FileInterceptor('photo', {dest: './src/database/files'}))
     async uploadAccountPhoto(@Req() req, @UploadedFile() file: Express.Multer.File){
         if(!file) throw new BadRequestException('Missing file');

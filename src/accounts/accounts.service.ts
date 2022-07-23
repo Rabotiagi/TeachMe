@@ -1,6 +1,6 @@
 require('dotenv').config();
 import { hash } from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import AppDataSource from 'src/database/connection';
 import { TutorData } from 'src/database/entities/tutorData.entity';
 import { Users } from 'src/database/entities/users.entity';
@@ -23,6 +23,9 @@ export class AccountsService {
     }
 
     async createAccount(accountData: iAccount): Promise<iAccount>{
+        const exists = await this.accountsRepo.findOneBy({email: accountData.email});
+        if(exists) throw new BadRequestException('Email is already in use');
+
         accountData.password = await hash(
             accountData.password, 
             Number(process.env.SALT)
