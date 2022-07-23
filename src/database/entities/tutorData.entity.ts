@@ -30,7 +30,10 @@ export class TutorData{
     @Column()
     experience: string;
 
-    @Column("decimal")
+    @Column({
+        type: "float",
+        default: 0
+    })
     grade: number;
 
     @OneToMany(() => Services, service => service.tutor)

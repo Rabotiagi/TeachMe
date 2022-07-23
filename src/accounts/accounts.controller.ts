@@ -8,8 +8,8 @@ import { TutorDataDto } from './dto/tutorData.dto';
 import { Response } from 'express';
 import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { Users } from 'src/database/entities/users.entity';
-import AppDataSource from 'src/database/connection';
 import { Filter } from './types/filter';
+import { iTutorData } from './interfaces/tutorData.interface';
 
 @Controller('accounts')
 export class AccountsController {
@@ -47,7 +47,7 @@ export class AccountsController {
     @UseGuards(JwtGuard)
     async postTutorData(@Req() req, @Body() body: TutorDataDto){
         body.user = req.user.id;
-        return await this.accountService.addTutorData(body);
+        return await this.accountService.addTutorData(body as iTutorData);
     }
 
     @Post('photo')

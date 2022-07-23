@@ -30,11 +30,6 @@ export class TutorDataDto {
     @IsString()
     @IsNotEmpty()
     experience: string;
-
-    @IsNumber()
-    @Max(5)
-    @Min(1)
-    grade: number;
     
     @IsObject({each: true})
     @IsOptional()

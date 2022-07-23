@@ -12,9 +12,9 @@ import { TutorServicesService } from './tutor-services.service';
 export class TutorServicesController {
     constructor(private readonly tutorServicesService: TutorServicesService){}
 
-    @Get(':tutorId')
+    @Get(':tutorDataId')
     @UsePipes(new IdValidationPipe(Users))
-    async getServices(@Param('tutorId') id: number){
+    async getServices(@Param('tutorDataId') id: number){
         return await this.tutorServicesService.getServices(id);
     }
 

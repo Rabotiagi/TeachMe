@@ -17,6 +17,6 @@ export class Reviews {
     @Column({length: 255})
     review: string;
 
-    @Column("decimal")
+    @Column("float")
     grade: number;
 }
