@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards, UsePipes } from '@nestjs/common';
+import { AuthorshipGuard } from 'src/appGuards/authorship.guard';
 import { JwtGuard } from 'src/appGuards/jwt-auth.guard';
 import { IdValidationPipe } from 'src/appPipes/idValidation.pipe';
 import { Reviews } from 'src/database/entities/reviews.entity';
@@ -25,6 +26,7 @@ export class ReviewsController {
     }
 
     @Delete(':reviewId')
+    @UseGuards(new AuthorshipGuard(Reviews))
     @UsePipes(new IdValidationPipe(Reviews))
     async deleteReview(@Param('reviewId') id: number){
         return await this.reviewsService.deleteReview(id);
