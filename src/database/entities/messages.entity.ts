@@ -1,18 +1,18 @@
 import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Chat } from "./chats.entity";
+import { Chats } from "./chats.entity";
 import { Users } from "./users.entity";
 import { File } from "./files.entity";
 
 @Entity()
-export class Message {
+export class Messages {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Chat, chat => chat.id, {onDelete: 'CASCADE'})
-    chatId: Chat;
+    @ManyToOne(() => Chats, {onDelete: 'CASCADE'})
+    chat: Chats;
 
-    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
-    senderId: number;
+    @ManyToOne(() => Users, {onDelete: 'CASCADE'})
+    sender: Users;
 
     @OneToOne(() => File, file => file.msg, {onDelete: 'CASCADE'})
     attachment: File

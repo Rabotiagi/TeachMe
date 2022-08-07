@@ -1,14 +1,14 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Message } from "./messages.entity";
+import { Messages } from "./messages.entity";
 
 @Entity()
 export class File {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => Message, msg => msg.attachment, {onDelete: 'CASCADE'})
+    @OneToOne(() => Messages, msg => msg.attachment, {onDelete: 'CASCADE'})
     @JoinColumn()
-    msg: Message;
+    msg: Messages;
 
     @Column({length: 255})
     path: string;

@@ -1,14 +1,13 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Users } from "./users.entity";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Chat {
+export class Chats {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
-    tutorId: Users;
-
-    @ManyToOne(() => Users, user => user.id, {onDelete: 'CASCADE'})
-    userId: Users;
+    @Column({
+        type: 'int',
+        array: true
+    })
+    users: number[];
 }

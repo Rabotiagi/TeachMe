@@ -8,9 +8,10 @@ import { StripeModule } from './stripe/stripe.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { TriggerModule } from './trigger/trigger.module';
 import { CardsModule } from './cards/cards.module';
+import { MessengerModule } from './messenger/messenger.module';
 
 @Module({
-  imports: [AccountsModule, AuthModule, TutorServicesModule, StripeModule, ReviewsModule, TriggerModule, CardsModule],
+  imports: [AccountsModule, AuthModule, TutorServicesModule, StripeModule, ReviewsModule, TriggerModule, CardsModule, MessengerModule],
   controllers: [AppController],
   providers: [AppService],
 })
