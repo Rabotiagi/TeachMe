@@ -1,10 +1,10 @@
 require('dotenv').config();
 import { ValidationPipe } from '@nestjs/common';
-import { APP_FILTER, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import AppDataSource from './database/connection';
 import { existsSync, mkdirSync } from 'fs';
-import { SocketIoAdapter } from './messenger/socket-io.adapter';
+import { SocketIoAdapter } from './messenger/adapters/socket-io.adapter';
 
 AppDataSource.initialize()
   .then(() => {

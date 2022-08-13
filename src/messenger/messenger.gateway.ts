@@ -14,19 +14,22 @@ import { SocketJwtGuard } from "src/appGuards/socket-auth.guard";
 import { BodyValidationPipe } from "src/appPipes/bodyValidation.pipe";
 import { Users } from "src/database/entities/users.entity";
 import { Repository } from "typeorm";
-import { ChatsService } from "./chats.service";
+import { iMessage } from "./interfaces/message.interface";
+import { ChatsService } from "./services/chats.service";
+import { MessagesService } from "./services/messages.service";
 
 @WebSocketGateway({
     namespace: 'chats'
 })
 @UseGuards(SocketJwtGuard)
-export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect{
+export class MessengerGateway implements OnGatewayConnection, OnGatewayDisconnect{
     constructor(
         private readonly chatsService: ChatsService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly messagesService: MessagesService
     ){}
 
-    private readonly logger = new Logger(ChatsGateway.name);
+    private readonly logger = new Logger(MessengerGateway.name);
 
     @WebSocketServer()
     io: Namespace;
@@ -35,7 +38,8 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect{
     async joinChat(@ConnectedSocket() client: Socket, @MessageBody('chatId') chatId: number){
         client.join(chatId.toString());
 
-        // Invoking method for getting chat-message history
+        const msgHistory = await this.messagesService.getChatMessages(chatId);
+        client.emit('history', msgHistory);
     }
 
     @SubscribeMessage('getChats')
@@ -64,6 +68,15 @@ export class ChatsGateway implements OnGatewayConnection, OnGatewayDisconnect{
     @SubscribeMessage('deleteChat')
     async deleteChat(@MessageBody('chatId') chatId: number){
         await this.chatsService.deleteChat(chatId);
+        // ref chats
+    }
+
+    @SubscribeMessage('chatMessage')
+    async chatMessage(@MessageBody() body: iMessage){
+        const message = await this.messagesService.createMessage(body);
+        console.log(message);
+        this.io.to(message.chat.toString()).emit('newMessage', message);
+        // Implement updating chats
     }
 
     handleConnection(client: Socket) {
